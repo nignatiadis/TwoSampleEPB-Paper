@@ -44,8 +44,8 @@ p = ggplot(df_plot, aes(x = log_lambda, y = ecdf, color = method)) +
   ) +
   xlim(-2, 2) +
   labs(
-    x = expression(log(lambda[i])),
-    y = expression(hat(tilde(G))(lambda[i]))
+    x = expression(log(tilde(lambda)[i])),
+    y = expression(hat(tilde(G))(tilde(lambda)[i]))
   ) +
   theme_minimal(base_size = 22) +
   theme(
