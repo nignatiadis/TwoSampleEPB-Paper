@@ -17,13 +17,10 @@ FDP = function(discovery, flag_list) {
 
 # Data Generator
 
-data_generator = function(n1, n2, data_generation_parameter, equ_var) {
+data_generator = function(n1, n2, data_generation_parameter, var_struct) {
   
   n1=n1
   n2=n2
-  k=data_generation_parameter$k
-  d1=data_generation_parameter$d1
-  d2=data_generation_parameter$d2
   m=data_generation_parameter$m
   mu1=data_generation_parameter$mu1
   mu2=data_generation_parameter$mu2
@@ -32,16 +29,47 @@ data_generator = function(n1, n2, data_generation_parameter, equ_var) {
   pi0 = data_generation_parameter$pi0
   mu0 = data_generation_parameter$mu0
   
+  k = NA
+  d1 = NA
+  d2 = NA
+  a = NA
+  b = NA
+  
+  if (var_struct == 0 | var_struct == 1) {
+    # unequal variance simulation with scaled F distribution or equal variance
+    k=data_generation_parameter$k
+    d1=data_generation_parameter$d1
+    d2=data_generation_parameter$d2
+  }
+  else if (var_struct == 2) {
+    # diffused uninformative distribution
+    a = data_generation_parameter$a
+    b = data_generation_parameter$b
+  }
+  
+  
   null_count = as.integer(pi0 * m)
   dis_count = m - null_count
   flag_list = c(rep(0, null_count), rep(1, dis_count)) # 0 for null, 1 for truth
   
-  lambda = k * rf(m, d1, d2)
   var2 = abs(rnorm(m, mean_var2, sqrt(var_var2)))
-  var1 = lambda * var2
-  if (equ_var) {
-    var1 = var2
+  
+  lambda = NA
+  
+  if (var_struct == 0) {
+    # unequal variance simulation with scaled F distribution
+    lambda = k * rf(m, d1, d2)
   }
+  else if (var_struct == 1) {
+    # equal variance
+    lambda = array(1, dim = c(m))
+  }
+  else if (var_struct == 2) {
+    # diffused uninformative distribution
+    lambda = exp(runif(m, a, b))
+  }
+  
+  var1 = lambda * var2
   
   X1 = matrix(0, m, n1)
   X2 = matrix(0, m, n2)
@@ -62,18 +90,24 @@ data_generator = function(n1, n2, data_generation_parameter, equ_var) {
   return (output)
 }
 
-dir_name = function(equ_var, n1, n2, data_generation_parameter, VR_parameter, DV_parameter, alpha) {
+dir_name = function(var_struct, n1, n2, data_generation_parameter, VR_parameter, DV_parameter, alpha) {
   
-  equ = 'unequal'
-  if (equ_var) {
-    equ = 'equal'
+  var_structure = 'equal'
+  if (var_struct == 0) {
+    # unequal variance simulation with scaled F distribution
+    var_structure = 'unequal'
+  }
+  else if (var_struct == 1) {
+    # equal variance
+    var_structure = 'equal'
+  }
+  else if (var_struct == 2) {
+    # diffused uninformative distribution
+    var_structure = 'diffuse'
   }
   
   n1=n1
   n2=n2
-  k=data_generation_parameter$k
-  d1=data_generation_parameter$d1
-  d2=data_generation_parameter$d2
   m=data_generation_parameter$m
   mu1=data_generation_parameter$mu1
   mu2=data_generation_parameter$mu2
@@ -91,14 +125,36 @@ dir_name = function(equ_var, n1, n2, data_generation_parameter, VR_parameter, DV
   l2 = DV_parameter[3]
   u2 = DV_parameter[4]
   
-  base_dir = paste('Simulation_result/', equ, sep = '')
+  base_dir = paste('Simulation_result/', var_structure, sep = '')
   
   if (!dir.exists(base_dir)) {
     print('Create Base Directory')
     dir.create(base_dir)
   }
   
-  head = paste(base_dir, '/(', paste(n1, n2, k, d1, d2,  m,  mu1,  mu2,  mean_var2,  var_var2,  pi0, mu0, B, l1, u1, B1, B2, l2, u2, alpha, sep = ','), ')', sep = '')
+  k = NA
+  d1 = NA
+  d2 = NA
+  a = NA
+  b = NA
+  
+  head = NA
+  
+  if (var_struct == 0 | var_struct == 1) {
+    # unequal variance simulation with scaled F distribution or equal variance
+    k=data_generation_parameter$k
+    d1=data_generation_parameter$d1
+    d2=data_generation_parameter$d2
+    
+    head = paste(base_dir, '/(', paste(n1, n2, k, d1, d2,  m,  mu1,  mu2,  mean_var2,  var_var2,  pi0, mu0, B, l1, u1, B1, B2, l2, u2, alpha, sep = ','), ')', sep = '')
+  }
+  else if (var_struct == 2) {
+    # diffused uninformative distribution
+    a = data_generation_parameter$a
+    b = data_generation_parameter$b
+    
+    head = paste(base_dir, '/(', paste(n1, n2, a, b,  m,  mu1,  mu2,  mean_var2,  var_var2,  pi0, mu0, B, l1, u1, B1, B2, l2, u2, alpha, sep = ','), ')', sep = '')
+  }
   
   return(head)
 }
@@ -112,7 +168,7 @@ file_name = function(rounds, algorithm_list) {
   return (paste('(', file, ')', sep = ''))
 }
 
-simulator = function(seed, data_generation_parameter, VR_parameter, DV_parameter, alpha, rounds, algorithm_list, equ_var) {
+simulator = function(seed, data_generation_parameter, VR_parameter, DV_parameter, alpha, rounds, algorithm_list, var_struct) {
   
   if (!dir.exists('Simulation_result')) {
     print('Create Data Directory')
@@ -126,7 +182,7 @@ simulator = function(seed, data_generation_parameter, VR_parameter, DV_parameter
   n1 = as.integer(args[1])
   n2 = as.integer(args[2])
   
-  dir = dir_name(equ_var, n1, n2, data_generation_parameter, VR_parameter, DV_parameter, alpha)
+  dir = dir_name(var_struct, n1, n2, data_generation_parameter, VR_parameter, DV_parameter, alpha)
   file = file_name(rounds, algorithm_list)
   
   if (!dir.exists(dir)) {
@@ -150,7 +206,7 @@ simulator = function(seed, data_generation_parameter, VR_parameter, DV_parameter
     
     Rerun = FALSE
     
-    output_r = data_generator(n1, n2, data_generation_parameter, equ_var)
+    output_r = data_generator(n1, n2, data_generation_parameter, var_struct)
     X1 = output_r$X1
     X2 = output_r$X2
     flag_list = output_r$flag_list
@@ -273,11 +329,13 @@ simulator = function(seed, data_generation_parameter, VR_parameter, DV_parameter
 #seed = Sys.time()
 seed = 1
 alpha = 0.1
-rounds = 50
+rounds = 10
 VR_parameter = c(1000, 0, 1.0)
 DV_parameter = c(80, 80, 0.01, 1.0)
 algorithm_list = c(1,2,3,4,5)
-equ_var = FALSE
+var_struct = 1 # 0: unequal; 1: equal; 2: diffuse
 data_generation_parameter = data.frame('k' = 2, 'd1' = 8, 'd2' = 12, 'm' = 5000, 'mu1' = 12, 'mu2' = 0, 'mean_var2' = 6, 'var_var2' = 4, 'pi0' = 0.9, 'mu0' = 0)
-
-simulator(seed, data_generation_parameter, VR_parameter, DV_parameter, alpha, rounds, algorithm_list, equ_var)
+if (var_struct == 2) {
+  data_generation_parameter = data.frame('a' = -5, 'b' = 5, 'm' = 5000, 'mu1' = 12, 'mu2' = 0, 'mean_var2' = 6, 'var_var2' = 4, 'pi0' = 0.9, 'mu0' = 0)
+}
+simulator(seed, data_generation_parameter, VR_parameter, DV_parameter, alpha, rounds, algorithm_list, var_struct)

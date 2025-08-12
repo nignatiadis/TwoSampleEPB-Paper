@@ -13,6 +13,7 @@ plotter_2D_ALL = function(Total_mass, df_2D, title) {
   threshold = find_threshold(df_2D$prob, Total_mass = Total_mass)
   size_breaks = seq(min(df_2D$prob[df_2D$prob > threshold]), max(df_2D$prob), length.out = 10)
   plot_2D = ggplot(df_2D, aes(x = log(x), y = log(y))) +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey50", linewidth = 1) +
     geom_point(aes(size = ifelse(prob < threshold, NA, prob)), color = "blue", alpha = 0.8) +
     scale_size_continuous(range = c(0.2, 5), breaks = size_breaks) +
     theme_minimal() +
@@ -31,6 +32,7 @@ plotter_2D = function(Total_mass, df_2D, title) {
   threshold = find_threshold(df_2D$prob, Total_mass = Total_mass)
   size_breaks = seq(min(df_2D$prob[df_2D$prob > threshold]), max(df_2D$prob), length.out = 10)
   plot_2D = ggplot(df_2D, aes(x = log(x), y = log(y))) +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "grey50", size = 1) +
     geom_point(aes(size = ifelse(prob < threshold, NA, prob)), color = "blue", alpha = 0.8) +
     scale_size_continuous(range = c(0.2, 5), breaks = size_breaks) +
     theme_minimal() +
