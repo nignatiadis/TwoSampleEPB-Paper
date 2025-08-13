@@ -17,7 +17,7 @@ plotter_2D_ALL = function(Total_mass, df_2D, title) {
     geom_point(aes(size = ifelse(prob < threshold, NA, prob)), color = "blue", alpha = 0.8) +
     scale_size_continuous(range = c(0.2, 5), breaks = size_breaks) +
     theme_minimal() +
-    xlim(-5, 2) +
+    #xlim(-5, 2) +
     labs(title = title,
          x = expression(log({sigma[iA]}^2)),
          y = expression(log({sigma[iB]}^2))) +
