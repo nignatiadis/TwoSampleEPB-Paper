@@ -59,3 +59,16 @@ plotter_1D = function(df_1D, title) {
           axis.text = element_text(size = 15))
   return (plot_1D)
 }
+
+plotter_pvalue_histogram = function(p_values, method_name) {
+  ggplot(data.frame(p = p_values), aes(x = p)) +
+    geom_histogram(bins = 50, fill = "grey80", color = "black", alpha = 0.7) +
+    labs(title = paste(method_name), x = "p-value", y = "Frequency") +
+    theme_minimal(base_size = 16) +
+    theme(
+      plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
+      axis.title = element_text(size = 16),
+      axis.text  = element_text(size = 14),
+      legend.position = "none"
+    )
+}
