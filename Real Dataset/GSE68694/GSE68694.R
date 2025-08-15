@@ -13,47 +13,47 @@ source('../../helper functions/Distribution Visualization helper.R')
 
 # Data Preprocessing
 
-gset = getGEO("GSE68694", GSEMatrix = TRUE)
-eset = gset[[1]]
-group_assignment = pData(eset)$title
-X = exprs(eset)   # probe expression matrix (probes x samples)
+#gset = getGEO("GSE68694", GSEMatrix = TRUE)
+#eset = gset[[1]]
+#group_assignment = pData(eset)$title
+#X = exprs(eset)   # probe expression matrix (probes x samples)
 
 ## 1) drop Affy control probes
-keep_ctrl = !grepl("^AFFX", rownames(X))
-X = X[keep_ctrl, , drop=FALSE]
+#keep_ctrl = !grepl("^AFFX", rownames(X))
+#X = X[keep_ctrl, , drop=FALSE]
 
 ## 2) Remove low-expression probes
 ## keep probes expressed above a global cutoff in at least half the samples
-cutoff = quantile(X, 0.05)                         # 5th percentile of GSE68694 intensities
-min_samples = ceiling(0.5 * ncol(X))               # expressed in >= half of samples
-keep_expr = rowSums(X > cutoff) >= min_samples
-expr_filtered = X[keep_expr, , drop=FALSE]         # probe-level filtered matrix
+#cutoff = quantile(X, 0.05)                         # 5th percentile of GSE68694 intensities
+#min_samples = ceiling(0.5 * ncol(X))               # expressed in >= half of samples
+#keep_expr = rowSums(X > cutoff) >= min_samples
+#expr_filtered = X[keep_expr, , drop=FALSE]         # probe-level filtered matrix
 
 ## 3) Merge probes into genes (GPL570) ---------------------------------------
 ## Map probes -> gene symbols
-ann = AnnotationDbi::select(hgu133plus2.db, keys     = rownames(expr_filtered), columns  = c("SYMBOL"), keytype  = "PROBEID")
+#ann = AnnotationDbi::select(hgu133plus2.db, keys     = rownames(expr_filtered), columns  = c("SYMBOL"), keytype  = "PROBEID")
 
 ## Keep one row per probe ID, aligned to expr_filtered
-ann = ann[!duplicated(ann$PROBEID), ]
-expr_filtered = expr_filtered[ann$PROBEID, , drop=FALSE]
-ann = ann[match(rownames(expr_filtered), ann$PROBEID), ]
+#ann = ann[!duplicated(ann$PROBEID), ]
+#expr_filtered = expr_filtered[ann$PROBEID, , drop=FALSE]
+#ann = ann[match(rownames(expr_filtered), ann$PROBEID), ]
 
 ## Keep only probes with a valid SYMBOL
-has_symbol = !is.na(ann$SYMBOL) & ann$SYMBOL != ""
-E = expr_filtered[has_symbol, , drop=FALSE]
+#has_symbol = !is.na(ann$SYMBOL) & ann$SYMBOL != ""
+#E = expr_filtered[has_symbol, , drop=FALSE]
 sym = ann$SYMBOL[has_symbol]
 
 ## average probes per gene
-gene_sum    = rowsum(E, group = sym)
-gene_counts = as.integer(table(sym)[rownames(gene_sum)])
-gene_expr_pre   = sweep(gene_sum, 1, gene_counts, "/")   # rows = genes, cols = samples
+#gene_sum    = rowsum(E, group = sym)
+#gene_counts = as.integer(table(sym)[rownames(gene_sum)])
+#gene_expr_pre   = sweep(gene_sum, 1, gene_counts, "/")   # rows = genes, cols = samples
 
-X1_pre = gene_expr_pre[, 1:3] # GSE68694 FATPAD
-X2_pre = gene_expr_pre[, 4:6] # GSE68694 MIND
-info_pre = information_extractor(X1_pre, X2_pre)
-filter_out_idx = c(which(info_pre$S1_list == 0), which(info_pre$S2_list == 0)) # = c(8988)
-expr = gene_expr_pre[-filter_out_idx, ]
-write.csv(expr, "Filtered GSE68694/GSE68694_gene_expression_matrix.csv", row.names = TRUE)
+#X1_pre = gene_expr_pre[, 1:3] # GSE68694 FATPAD
+#X2_pre = gene_expr_pre[, 4:6] # GSE68694 MIND
+#info_pre = information_extractor(X1_pre, X2_pre)
+#filter_out_idx = c(which(info_pre$S1_list == 0), which(info_pre$S2_list == 0)) # = c(8988)
+#expr = gene_expr_pre[-filter_out_idx, ]
+#write.csv(expr, "Filtered GSE68694/GSE68694_gene_expression_matrix.csv", row.names = TRUE)
 
 # DE analysis
 
@@ -133,7 +133,7 @@ t_BF_list = t_BF_list[log(tau_list) >= -7.5 & log(tau_list) <= 7.5] # Range of s
 t_VREPB = c()
 
 for (tau in tau_grid) {
-  t_VREPB_i = BF_pvalue_VREPB_solver_positive(K1, K2, grid_1D, mass, tau, 0.05)
+  t_VREPB_i = BF_pvalue_VREPB_solver_positive(K1, K2, grid_1D, mass, tau, alpha)
   t_VREPB = append(t_VREPB, t_VREPB_i)
 }
 
@@ -141,7 +141,7 @@ for (tau in tau_grid) {
 t_BF = c()
 
 for (tau in tau_grid) {
-  t_BF_i = BF_pvalue_BF_solver_positive(tau, K1, K2, 0.05)
+  t_BF_i = BF_pvalue_BF_solver_positive(tau, K1, K2, alpha)
   t_BF = append(t_BF, t_BF_i)
 }
 
@@ -150,7 +150,7 @@ for (tau in tau_grid) {
 t_Welch = c()
 
 for (tau in tau_grid) {
-  t_Welch_i = BF_pvalue_Welch_solver_positive(tau, K1, K2, 0.05)
+  t_Welch_i = BF_pvalue_Welch_solver_positive(tau, K1, K2, alpha)
   t_Welch = append(t_Welch, t_Welch_i)
 }
 
@@ -159,7 +159,7 @@ for (tau in tau_grid) {
 t_EV = c()
 
 for (tau in tau_grid) {
-  t_EV_i = BF_pvalue_EV_solver_positive(tau, K1, K2, 0.05)
+  t_EV_i = BF_pvalue_EV_solver_positive(tau, K1, K2, alpha)
   t_EV = append(t_EV, t_EV_i)
 }
 
