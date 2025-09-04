@@ -25,7 +25,8 @@ FDR_plotter = function(a, Full_FDR_Data) {
   
   plot(dat$n2, dat$VREPB, type = 'o', pch = method_pch["VREPB"], col = method_colors["VREPB"], 
        lwd = 3, cex = 1.5, xlab = expression(K[B]), ylab = "FDR",
-       ylim = c(0, max(dat[, c("VREPB", "DVEPB", "Welch", "B_F", "EV_test")], 0.13)),
+       ylim = c(0, 0.58),
+       #ylim = c(0, max(dat[, c("VREPB", "DVEPB", "Welch", "B_F", "EV_test")], 0.13)),
        cex.lab = 1.5, cex.axis = 1.5, bty = "n")
   lines(dat$n2, dat$DVEPB, type = 'o', pch = method_pch["DVEPB"], col = method_colors["DVEPB"], lwd = 3, cex = 1.5)
   lines(dat$n2, dat$Welch, type = 'o', pch = method_pch["Welch"], col = method_colors["Welch"], lwd = 3, cex = 1.5)
@@ -40,7 +41,8 @@ Power_plotter = function(a, Full_Power_Data) {
   
   plot(dat$n2, dat$VREPB, type = 'o', pch = method_pch["VREPB"], col = method_colors["VREPB"],
        lwd = 3, cex = 1.5, xlab = expression(K[B]), ylab = "Power",
-       ylim = c(0, max(dat[, c("VREPB", "DVEPB", "Welch", "B_F", "EV_test")])), 
+       ylim = c(0, 0.58),
+       #ylim = c(0, max(dat[, c("VREPB", "DVEPB", "Welch", "B_F", "EV_test")])), 
        cex.lab = 1.5, cex.axis = 1.5, bty = "n")
   lines(dat$n2, dat$DVEPB, type = 'o', pch = method_pch["DVEPB"], col = method_colors["DVEPB"], lwd = 3, cex = 1.5)
   lines(dat$n2, dat$Welch, type = 'o', pch = method_pch["Welch"], col = method_colors["Welch"], lwd = 3, cex = 1.5)
@@ -72,10 +74,41 @@ mtext(expression(bold("b) ") * a == 10),
 mtext(expression(bold("c) ") * a == 15),
       side = 2, outer = TRUE, line = 2, at = 0.29, cex = 1.5, las = 1)
 
-# Add legend
 legend("topright", inset = c(-0.57, -3.15),
        legend = c("EV-test", "Welch", "B-F", "VREPB", "DVEPB"),
        col = method_colors, pch = method_pch, lwd = 3, pt.cex = 2,
        cex = 1.5, y.intersp = 1.3, bty = "n", xpd = NA)
+
+dev.off()
+
+png("./Graph/Diffuse a = 5 test.png", width = 3600, height = 1200, res = 300, family = "sans")
+par(mfrow = c(1,2), mar = c(4,5.2,1,2), oma = c(1,1,0,13), mgp = c(3.2,1,0))
+
+# First row (a = 5)
+FDR_plotter(5, Full_FDR_Data)
+Power_plotter(5, Full_Power_Data)
+
+#legend("topright", inset = c(-0.7, 0),
+       #legend = c("EV-test", "Welch", "B-F", "VREPB", "DVEPB"),
+       #col = method_colors, pch = method_pch, lwd = 3, pt.cex = 2,
+       #cex = 1.2, y.intersp = 1.3, bty = "n", xpd = NA)
+
+dev.off()
+
+png("./Graph/Diffuse a = 10 test.png", width = 3600, height = 1200, res = 300, family = "sans")
+par(mfrow = c(1,2), mar = c(4,5.2,1,2), oma = c(1,1,0,13), mgp = c(3.2,1,0))
+
+# Second row (a = 10)
+FDR_plotter(10, Full_FDR_Data)
+Power_plotter(10, Full_Power_Data)
+
+dev.off()
+
+png("./Graph/Diffuse a = 15 test.png", width = 3600, height = 1200, res = 300, family = "sans")
+par(mfrow = c(1,2), mar = c(4,5.2,1,2), oma = c(1,1,0,13), mgp = c(3.2,1,0))
+
+# Third row (a = 15)
+FDR_plotter(15, Full_FDR_Data)
+Power_plotter(15, Full_Power_Data)
 
 dev.off()

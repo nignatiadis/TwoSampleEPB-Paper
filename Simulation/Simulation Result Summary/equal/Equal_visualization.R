@@ -25,7 +25,8 @@ FDR_plotter = function(n1, length_n2, Full_FDR_Data) {
   
   plot(dat$n2, dat$VREPB, type = 'o', pch = method_pch["VREPB"], col = method_colors["VREPB"], 
        lwd = 3, cex = 1.5, xlab = expression(K[B]), ylab = "FDR",
-       ylim = c(0, max(dat[, c("VREPB", "DVEPB", "Welch", "B_F", "EV_test")], 0.13)),
+       ylim = c(0, 0.25),
+       #ylim = c(0, max(dat[, c("VREPB", "DVEPB", "Welch", "B_F", "EV_test")], 0.13)),
        cex.lab = 1.5, cex.axis = 1.5, bty = "n")
   lines(dat$n2, dat$DVEPB, type = 'o', pch = method_pch["DVEPB"], col = method_colors["DVEPB"], lwd = 3, cex = 1.5)
   lines(dat$n2, dat$Welch, type = 'o', pch = method_pch["Welch"], col = method_colors["Welch"], lwd = 3, cex = 1.5)
@@ -40,7 +41,8 @@ Power_plotter = function(n1, length_n2, Full_Power_Data) {
   
   plot(dat$n2, dat$VREPB, type = 'o', pch = method_pch["VREPB"], col = method_colors["VREPB"],
        lwd = 3, cex = 1.5, xlab = expression(K[B]), ylab = "Power",
-       ylim = c(0, max(dat[, c("VREPB", "DVEPB", "Welch", "B_F", "EV_test")])), 
+       ylim = c(0, 0.7),
+       #ylim = c(0, max(dat[, c("VREPB", "DVEPB", "Welch", "B_F", "EV_test")])), 
        cex.lab = 1.5, cex.axis = 1.5, bty = "n")
   lines(dat$n2, dat$DVEPB, type = 'o', pch = method_pch["DVEPB"], col = method_colors["DVEPB"], lwd = 3, cex = 1.5)
   lines(dat$n2, dat$Welch, type = 'o', pch = method_pch["Welch"], col = method_colors["Welch"], lwd = 3, cex = 1.5)
@@ -70,4 +72,26 @@ legend("topright", inset = c(-0.75, -1.5),
        col = method_colors, pch = method_pch, lwd = 3, pt.cex = 2,
        cex = 1.5, y.intersp = 1.3, bty = "n", xpd = NA)
 
+dev.off()
+
+png("./Graph/Equal K_A = 3 test.png", width = 3600, height = 1200, res = 300, family = "sans")
+par(mfrow = c(1,2), mar = c(4,5.2,1,2), oma = c(1,1,0,13), mgp = c(3.2,1,0))
+
+FDR_plotter(3, 7, Full_FDR_Data)
+Power_plotter(3, 7, Full_Power_Data)
+
+# par(xpd = NA) # allow drawing in the outer margin
+# legend("topright", inset = c(-0.7, 0),
+       #legend = c("EV-test", "Welch", "B-F", "VREPB", "DVEPB"),
+       #col = method_colors, pch = method_pch, lwd = 3, pt.cex = 2,
+       #cex = 1.2, y.intersp = 1.3, bty = "n", xpd = NA)
+dev.off()
+
+png("./Graph/Equal K_A = 5 test.png", width = 3600, height = 1200, res = 300, family = "sans")
+par(mfrow = c(1,2), mar = c(4,5.2,1,2), oma = c(1,1,0,13), mgp = c(3.2,1,0))
+
+FDR_plotter(5, 7, Full_FDR_Data)
+Power_plotter(5, 7, Full_Power_Data)
+
+par(xpd = NA)
 dev.off()

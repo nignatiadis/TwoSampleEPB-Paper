@@ -327,15 +327,15 @@ simulator = function(seed, data_generation_parameter, VR_parameter, DV_parameter
 }
 
 #seed = Sys.time()
-seed = 1
+seed = 2
 alpha = 0.1
-rounds = 10
+rounds = 25
 VR_parameter = c(1000, 0, 1.0)
-DV_parameter = c(80, 80, 0.01, 1.0)
-algorithm_list = c(1,2,3,4,5)
-var_struct = 1 # 0: unequal; 1: equal; 2: diffuse
+DV_parameter = c(80, 80, 0.01, 1)
+algorithm_list = c(2)
+var_struct = 2 # 0: unequal; 1: equal; 2: diffuse
 data_generation_parameter = data.frame('k' = 2, 'd1' = 8, 'd2' = 12, 'm' = 5000, 'mu1' = 12, 'mu2' = 0, 'mean_var2' = 6, 'var_var2' = 4, 'pi0' = 0.9, 'mu0' = 0)
 if (var_struct == 2) {
-  data_generation_parameter = data.frame('a' = -5, 'b' = 5, 'm' = 5000, 'mu1' = 12, 'mu2' = 0, 'mean_var2' = 6, 'var_var2' = 4, 'pi0' = 0.9, 'mu0' = 0)
+  data_generation_parameter = data.frame('a' = -15, 'b' = 15, 'm' = 5000, 'mu1' = 12, 'mu2' = 0, 'mean_var2' = 6, 'var_var2' = 4, 'pi0' = 0.9, 'mu0' = 0)
 }
 simulator(seed, data_generation_parameter, VR_parameter, DV_parameter, alpha, rounds, algorithm_list, var_struct)

@@ -33,7 +33,7 @@ df2 = data.frame(log_lambda = log(df_lambda_with_ecdf_vbg$x), ecdf = df_lambda_w
 
 df_plot = rbind(df1, df2)
 
-method_labels = c("Voom" = expression(hat(tilde(G))~"with Voom"), "VoombyGroup" = expression(hat(tilde(G))~"with VoombyGroup"))
+method_labels = c("Voom" = expression(hat(G)~"with Voom"), "VoombyGroup" = expression(hat(G)~"with VoombyGroup"))
 
 p = ggplot(df_plot, aes(x = log_lambda, y = ecdf, color = method)) +
   geom_line(size = 1.5) +
@@ -44,8 +44,8 @@ p = ggplot(df_plot, aes(x = log_lambda, y = ecdf, color = method)) +
   ) +
   xlim(-2, 2) +
   labs(
-    x = expression(log(tilde(lambda)[i])),
-    y = expression(hat(tilde(G))(tilde(lambda)[i]))
+    x = expression(log(lambda[i])),
+    y = expression(hat(G)(lambda[i]))
   ) +
   theme_minimal(base_size = 22) +
   theme(

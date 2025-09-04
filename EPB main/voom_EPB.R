@@ -250,6 +250,42 @@ P_value_EV_test = function (info) {
   return (P_value_list_EV_test)
 }
 
+# P value calculation for Beherens-Fisher test
+
+BF_test_p = function(n1, n2, Z1, Z2, S1, S2, W1, W2) {
+  nA = sum(W1)
+  nB = sum(W2)
+  
+  ifunc = function(x){
+    pt( (Z1 - Z2 + (sqrt(S1) / sqrt(nA)) * x) / (sqrt(S2) / sqrt(nB)), n2 - 1) * dt(x, n1 - 1)
+  }
+  
+  p.L = integrate(ifunc, -Inf, Inf)$value
+  
+  p = min(p.L, 1 - p.L) * 2
+  return (p)
+}
+
+P_value_BF_test = function (info) {
+  
+  n1 = info$n1
+  n2 = info$n2
+  m = info$m
+  Z1_list = info$Z1_list 
+  Z2_list = info$Z2_list
+  S1_list = info$S1_list
+  S2_list = info$S2_list
+  W1_matrix = info$W1_matrix
+  W2_matrix = info$W2_matrix
+  
+  P_value_list_BF_test = rep(0, m)
+  for (i in 1:m) {
+    P_value_list_BF_test[i] = BF_test_p(n1 = n1, n2 = n2, Z1 = Z1_list[i], Z2 = Z2_list[i], S1 = S1_list[i], S2 = S2_list[i], W1 = W1_matrix[i, ], W2 = W2_matrix[i, ])
+  }
+  
+  return (P_value_list_BF_test)
+}
+
 # Extract sufficient statistics
 
 information_extractor = function(X1, X2, W1, W2) {
